@@ -36,7 +36,7 @@ do {
     let dockerfile = try workingCopy.dockerfile()
     let currentSwiftVersion = try dockerfile.getSwiftVersion()
     print("Current Swift version: \(currentSwiftVersion)")
-    var tagAndIdentifiers = [(tag: String, identifier: String)]()
+    var nextTagAndIdentifiers = [(tag: String, identifier: String)]()
     var branch: String?
     let repository = GitHub.repository(owner: "apple", name: "swift")
     // Check Swift version prefix patterns
@@ -49,12 +49,12 @@ do {
             guard tag != currentSwiftVersion else { break }
             guard let identifier = pattern.firstMatchRanges(in: tag)?[2...].map({ tag[$0] })
                 .joined().unicodeScalars.filter(CharacterSet.alphanumerics.contains) else { continue }
-            tagAndIdentifiers.append((tag, String(identifier)))
+            nextTagAndIdentifiers.append((tag, String(identifier)))
         }
         branch = try dockerfile.getBranch()
     }
 
-    if tagAndIdentifiers.isEmpty {
+    if nextTagAndIdentifiers.isEmpty {
         // Check Swift version suffix patterns
         let suffixAndPetterns = swiftVersionSuffixPatterns.compactMap { pattern -> (String, NSRegularExpression)? in
             guard let range = pattern.firstMatchRanges(in: currentSwiftVersion)?[2] else { return nil }
@@ -66,16 +66,13 @@ do {
                 guard tag != currentSwiftVersion else { break }
                 guard let range = pattern.firstMatchRanges(in: tag)?[1] else { continue }
                 let identifier = tag[range].unicodeScalars.filter(CharacterSet.alphanumerics.contains)
-                tagAndIdentifiers.append((tag, String(identifier)))
+                nextTagAndIdentifiers.append((tag, String(identifier)))
             }
         }
     }
 
-    if tagAndIdentifiers.isEmpty {
-        fatalError("unknown swift version string: \(currentSwiftVersion)")
-    }
-    print("Found tags: \(tagAndIdentifiers)")
-    for (tag, identifier) in tagAndIdentifiers.sorted(by: { $0.tag < $1.tag }) {
+    print("Found tags: \(nextTagAndIdentifiers)")
+    for (tag, identifier) in nextTagAndIdentifiers.sorted(by: { $0.tag < $1.tag }) {
         let updatedDockerfile = try dockerfile.dockerfile(branch: branch ?? tag.lowercased(), version: tag)
         try execute(["docker", "build", "-", "--tag", "updater", "--force-rm"],
                     at: currentDirectoryURL,
