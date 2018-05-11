@@ -84,8 +84,6 @@ do {
         try updatedDockerfile.write()
         try workingCopy.add(dockerfile.url.path)
         try workingCopy.commit(message: tag, tag: identifier)
-        try workingCopy.push()
-        try workingCopy.pushTags()
     }
 } catch {
     fatalError("\(error)")
