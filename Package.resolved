@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SwiftBacktrace",
+        "repositoryURL": "https://github.com/norio-nomura/SwiftBacktrace",
+        "state": {
+          "branch": "master",
+          "revision": "fbd371808556227ceea59fcfebc26c1662ad0dde",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,11 @@
+version: '3'
+services:
+  updater:
+    build: 
+      context: .
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+    env_file: .env
+    volumes:
+      - ../docker-swift:/docker-swift
+    command: ["docker-swift-updater"]
