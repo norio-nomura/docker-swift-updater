@@ -78,11 +78,11 @@ func execute(_ arguments: [String],
     }
     process.launch()
     let group = DispatchGroup()
-    DispatchQueue.global().async(group: group) { process.waitUntilExit() }
     var stdoutData = Data()
     DispatchQueue.global().async(group: group) { stdoutData.append(stdoutPipe.readOutput()) }
     var stderrData = Data()
     DispatchQueue.global().async(group: group) { stderrData.append(stderrPipe.readOutput()) }
+    process.waitUntilExit()
     group.wait()
 
     if process.terminationStatus != 0 {
