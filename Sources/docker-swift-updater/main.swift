@@ -72,7 +72,12 @@ do {
     }
 
     print("Found tags: \(nextTagAndIdentifiers)")
+    let existingTags = try workingCopy.tags()
     for (tag, identifier) in nextTagAndIdentifiers.sorted(by: { $0.tag < $1.tag }) {
+        guard !existingTags.contains(identifier) else {
+            print("Skip existing tag: \(identifier)")
+            continue
+        }
         let updatedDockerfile = try dockerfile.dockerfile(branch: branch ?? tag.lowercased(), version: tag)
         try execute(["docker", "build", "-", "--tag", "updater", "--force-rm"],
                     at: currentDirectoryURL,
