@@ -1,4 +1,4 @@
-ARG DOCKER_IMAGE=norionomura/swift:swift-4.2-branch
+ARG DOCKER_IMAGE=norionomura/swift:4.2
 FROM ${DOCKER_IMAGE}
 RUN apt-get update && apt-get install -y \
     apt-transport-https \
